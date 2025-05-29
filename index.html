@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Battery Explorer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-bolt"></i>
+                <span>EV Explorer</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#learn" class="nav-link">Learn</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#resources" class="nav-link resources-btn">Resources</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>THE FUTURE IS ELECTRIC</h1>
+                <p>Welcome to your one stop shop when it comes to all matters EV BATTERY</p>
+                <button class="explore-btn">Explore</button>
+            </div>
+            <div class="hero-image">
+                <img src="image2.png" alt="Electric Vehicle Battery Visualization" class="ev-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Learn Section -->
+    <section id="learn" class="learn-section">
+        <div class="learn-header">
+            <h2>LEARN ALL ABOUT EV BATTERIES</h2>
+            <p>Explore different types of EV batteries</p>
+        </div>
+        
+        <!-- Battery Visualization -->
+        <div class="battery-visualization">
+            <img src="image3.png" alt="EV Battery Types Visualization" class="battery-visual">
+        </div>
+
+        <!-- Battery Cards Container -->
+        <div class="battery-cards-container" id="batteryCards">
+            <!-- Battery cards will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="resources-section">
+        <div class="resources-content">
+            <h2>RESOURCES</h2>
+            <p>To find out more information visit these resources</p>
+            <div class="resource-buttons">
+                <button class="resource-btn active">EV PRICE CALCULATOR</button><!--CODE FOR THE APIS TO BE IMPLEMENTED(NOT YET DONE)-->
+                <button class="resource-btn">LATEST EV NEWS</button> <!--CODE FOR THE APIS TO BE IMPLEMENTED(NOT YET DONE!!)-->
+            </div>
+        </div>
+        <div class="resources-image">
+            <img src="image4.png" alt="Electric Vehicle Technology" class="resource-visual">
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="contact-content">
+            <h2>CONTACT US</h2>
+            <p>You can reach us via facebook and also subscribe to our Youtube channel for more EV content</p>
+            
+            <div class="contact-links">
+                <h3>The links</h3>
+                <div class="social-links">
+                    <a href="https://www.youtube.com/" class="social-link"> <!-- add the homepage for YouTube main page-->
+                        <i class="fab fa-youtube"></i>
+                        <span>Youtube</span>
+                    </a>
+                    <a href="https://www.facebook.com/" class="social-link">
+                        <i class="fab fa-facebook"></i> <!-- add the homepage for YouTube main page-->
+                        <span>facebook</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 EV Battery Explorer. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
