@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderBatteryCards();
     setupEventListeners();
     setupSmoothScrolling();
+    addScrollableStyles();
 });
 
 // Initialize DOM elements
@@ -136,7 +137,7 @@ function renderBatteryCards() {
     });
 }
 
-// Create individual battery card
+// Create individual battery card with scrollable content
 function createBatteryCard(battery) {
     const card = document.createElement('div');
     card.className = `battery-card ${battery.id}`;
@@ -156,19 +157,33 @@ function createBatteryCard(battery) {
         <p class="battery-summary">${battery.summary}</p>
         
         <div class="battery-details">
-            <p><strong>Description:</strong> ${battery.description}</p>
-            
-            <div class="battery-specs">
-                <h4>Key Features:</h4>
-                <ul class="battery-features">
-                    ${battery.features.map(feature => `<li>${feature}</li>`).join('')}
-                </ul>
+            <div class="battery-details-content">
+                <div class="description-section">
+                    <p><strong>Description:</strong> ${battery.description}</p>
+                </div>
+                
+                <div class="features-section">
+                    <h4>Key Features:</h4>
+                    <ul class="battery-features">
+                        ${battery.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="pros-cons-section">
+                    <div class="advantages-section">
+                        <p><strong>Advantages:</strong> ${battery.advantages}</p>
+                    </div>
+                    <div class="disadvantages-section">
+                        <p><strong>Disadvantages:</strong> ${battery.disadvantages}</p>
+                    </div>
+                    <div class="applications-section">
+                        <p><strong>Applications:</strong> ${battery.applications}</p>
+                    </div>
+                </div>
             </div>
             
-            <div class="battery-pros-cons">
-                <p><strong>Advantages:</strong> ${battery.advantages}</p>
-                <p><strong>Disadvantages:</strong> ${battery.disadvantages}</p>
-                <p><strong>Applications:</strong> ${battery.applications}</p>
+            <div class="scroll-to-top-btn" title="Scroll to top">
+                <i class="fas fa-arrow-up"></i>
             </div>
         </div>
     `;
@@ -185,6 +200,12 @@ function setupEventListeners() {
     
     // Battery card toggle functionality
     document.addEventListener('click', handleCardToggle);
+    
+    // Scroll to top functionality for cards
+    document.addEventListener('click', handleScrollToTop);
+    
+    // Hide scroll indicator after scrolling
+    document.addEventListener('scroll', handleScrollIndicator, true);
     
     // Explore button functionality
     const exploreBtn = document.querySelector('.explore-btn');
@@ -206,6 +227,38 @@ function setupEventListeners() {
     
     // Navbar scroll effect
     window.addEventListener('scroll', handleNavbarScroll);
+}
+
+// Handle scroll to top button in cards
+function handleScrollToTop(event) {
+    const scrollBtn = event.target.closest('.scroll-to-top-btn');
+    if (!scrollBtn) return;
+    
+    const detailsContent = scrollBtn.parentElement.querySelector('.battery-details-content');
+    detailsContent.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
+    // Add visual feedback
+    scrollBtn.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+        scrollBtn.style.transform = 'scale(1)';
+    }, 150);
+}
+
+// Handle scroll indicator visibility
+function handleScrollIndicator(event) {
+    const target = event.target;
+    if (!target.classList.contains('battery-details-content')) return;
+    
+    const scrollToTopBtn = target.parentElement.querySelector('.scroll-to-top-btn');
+    
+    if (target.scrollTop > 50) {
+        if (scrollToTopBtn) scrollToTopBtn.style.opacity = '1';
+    } else {
+        if (scrollToTopBtn) scrollToTopBtn.style.opacity = '0';
+    }
 }
 
 // Toggle mobile menu
@@ -239,13 +292,14 @@ function closeMobileMenu() {
     });
 }
 
-// Handle battery card toggle
+// Handle battery card toggle with enhanced scrollable functionality
 function handleCardToggle(event) {
     const toggleBtn = event.target.closest('.toggle-btn');
     if (!toggleBtn) return;
     
     const card = toggleBtn.closest('.battery-card');
     const details = card.querySelector('.battery-details');
+    const detailsContent = card.querySelector('.battery-details-content');
     const chevron = toggleBtn.querySelector('i');
     
     // Toggle active states
@@ -255,12 +309,18 @@ function handleCardToggle(event) {
     // Animate chevron
     if (details.classList.contains('active')) {
         chevron.style.transform = 'rotate(180deg)';
+        
+        // Reset scroll position when opening
+        setTimeout(() => {
+            detailsContent.scrollTop = 0;
+        }, 100);
+        
     } else {
         chevron.style.transform = 'rotate(0deg)';
     }
     
     // Add visual feedback
-    card.style.transform = details.classList.contains('active') ? 'scale(1.02)' : 'scale(1)';
+    card.style.transform = details.classList.contains('active') ? 'scale(1.01)' : 'scale(1)';
     
     setTimeout(() => {
         card.style.transform = 'scale(1)';
@@ -316,6 +376,202 @@ function handleNavbarScroll() {
     }
 }
 
+// Add custom styles for scrollable cards
+function addScrollableStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        /* Enhanced scrollable battery cards */
+        .battery-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            position: relative;
+        }
+        
+        .battery-details.active {
+            max-height: 400px; /* Increased max height */
+            padding: 20px 0;
+        }
+        
+        .battery-details-content {
+            max-height: 350px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0 15px;
+            position: relative;
+            
+            /* Custom scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #f1f1f1;
+        }
+        
+        .battery-details-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .battery-details-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .battery-details-content::-webkit-scrollbar-thumb {
+            background: #3498db;
+            border-radius: 3px;
+            transition: background 0.3s ease;
+        }
+        
+        .battery-details-content::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+        
+        /* Scroll to top button */
+        .scroll-to-top-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            background: #3498db;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.4);
+            z-index: 20;
+        }
+        
+        .scroll-to-top-btn:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+        
+        .scroll-to-top-btn i {
+            font-size: 14px;
+        }
+        
+        /* Content sections spacing */
+        .description-section,
+        .features-section,
+        .pros-cons-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .pros-cons-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .advantages-section,
+        .disadvantages-section,
+        .applications-section {
+            margin-bottom: 12px;
+        }
+        
+        /* Enhanced feature list */
+        .battery-features {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+        }
+        
+        .battery-features li {
+            background: #f8f9fa;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-left: 4px solid #3498db;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .battery-features li:hover {
+            background: #e3f2fd;
+            border-left-color: #2196f3;
+            transform: translateX(5px);
+        }
+        
+        /* Fade effect for long content */
+        .battery-details-content::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(255, 255, 255, 0.9));
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .battery-details-content:not(:hover)::after {
+            opacity: 1;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .battery-details.active {
+                max-height: 350px;
+            }
+            
+            .battery-details-content {
+                max-height: 300px;
+                padding: 0 10px;
+            }
+            
+            .scroll-to-top-btn {
+                width: 30px;
+                height: 30px;
+                bottom: 5px;
+                right: 10px;
+            }
+            
+            .battery-features li {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+        
+        /* Animation enhancements */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+        
+        .battery-card:hover {
+            animation: pulse 2s infinite;
+        }
+        
+        .explore-btn:hover {
+            animation: pulse 2s infinite;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Search/Filter functionality (Optional Enhancement)
 function filterBatteries(searchTerm) {
     const cards = document.querySelectorAll('.battery-card');
@@ -354,7 +610,7 @@ function sortBatteries(sortBy) {
     cards.forEach(card => container.appendChild(card));
 }
 
-// Intersection Observer for animations (Optional Enhancement)
+// Intersection Observer for animations
 function setupScrollAnimations() {
     const observerOptions = {
         threshold: 0.1,
@@ -393,48 +649,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     setupSmoothScrolling();
     initializeScrollAnimations();
+    addScrollableStyles();
 });
-
-// Utility function to add CSS animations
-function addCustomStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
-            }
-        }
-        
-        .battery-card:hover {
-            animation: pulse 2s infinite;
-        }
-        
-        .explore-btn:hover {
-            animation: pulse 2s infinite;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Call addCustomStyles after DOM is loaded
-document.addEventListener('DOMContentLoaded', addCustomStyles);
 
 // Export functions for potential external use
 window.EVBatteryExplorer = {
