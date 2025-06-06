@@ -8,7 +8,7 @@ label: 'Modern Electric Vehicle',
 alt: 'Tesla Model 3 charging'
  },
  {
-url: 'image6.png',
+url: 'image3.png',
 label: 'EV Battery Technology',
 alt: 'Electric vehicle battery pack'
  },
@@ -502,11 +502,17 @@ function handleScrollToTop(event) {
     const scrollBtn = event.target.closest('.scroll-to-top-btn');
     if (!scrollBtn) return;
     
+    // Prevent event bubbling to avoid closing modal
+    event.preventDefault();
+    event.stopPropagation();
+    
     const detailsContent = scrollBtn.parentElement.querySelector('.battery-details-content');
-    detailsContent.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    if (detailsContent) {
+        detailsContent.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
     
     // Add visual feedback
     scrollBtn.style.transform = 'scale(0.9)';
@@ -564,22 +570,34 @@ function closeMobileMenu() {
 function handleCardToggle(event) {
     const toggleBtn = event.target.closest('.toggle-btn');
     const card = event.target.closest('.battery-card');
+    const scrollBtn = event.target.closest('.scroll-to-top-btn');
     
-    // Prevent expanding if clicking close button
-    if (event.target.closest('.battery-card.expanded::after')) {
+    // Prevent any action if clicking scroll button
+    if (scrollBtn) {
+        event.stopPropagation();
         return;
     }
     
-    // Handle card expansion (modal view)
-    if (card && !toggleBtn) {
-        expandCard(card);
+    // If no card found, return early
+    if (!card) return;
+    
+    // If card is already expanded, don't do anything
+    if (card.classList.contains('expanded')) {
         return;
     }
     
-    // Original toggle functionality is now handled within expanded view
-    if (toggleBtn && !card.classList.contains('expanded')) {
-        expandCard(card);
+    // Check if any card is currently animating
+    const container = document.getElementById('batteryCards');
+    if (container.classList.contains('animating')) {
+        return; // Prevent clicks during animation
     }
+    
+    // Prevent default and stop propagation for clean event handling
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Expand the card regardless of what was clicked inside it
+    expandCard(card);
 }
 
 // Expand card to center modal view
@@ -590,14 +608,23 @@ function expandCard(clickedCard) {
     // Check if any card is currently expanded
     const currentlyExpanded = container.querySelector('.battery-card.expanded');
     if (currentlyExpanded) {
-        collapseAllCards();
         if (currentlyExpanded === clickedCard) {
-            return; // If clicking the same expanded card, just close it
+            return; // If clicking the same expanded card, just ignore
         }
+        collapseAllCards();
+        // Wait for collapse animation to complete before expanding new card
+        setTimeout(() => expandCard(clickedCard), 400);
+        return;
     }
     
-    // Close all card details first
+    // Mark container as animating to prevent multiple clicks
+    container.classList.add('animating');
+    
+    // Reset all cards to clean state
     allCards.forEach(card => {
+        // Clear any inline styles that might interfere
+        card.style.cssText = '';
+        
         const details = card.querySelector('.battery-details');
         const toggleBtn = card.querySelector('.toggle-btn');
         const chevron = toggleBtn?.querySelector('i');
@@ -607,7 +634,10 @@ function expandCard(clickedCard) {
         if (chevron) chevron.style.transform = 'rotate(0deg)';
     });
     
-    // Expand the clicked card
+    // Force reflow to ensure clean state
+    container.offsetHeight;
+    
+    // Expand the clicked card immediately
     clickedCard.classList.add('expanded');
     container.classList.add('modal-mode');
     
@@ -616,19 +646,25 @@ function expandCard(clickedCard) {
     const detailsContent = clickedCard.querySelector('.battery-details-content');
     if (details) {
         details.classList.add('active');
-        setTimeout(() => {
-            if (detailsContent) detailsContent.scrollTop = 0;
-        }, 100);
     }
     
-    // Add hint message
-    addModalHint();
-    
-    // Add event listeners for closing
+    // Wait for expansion animation to complete
     setTimeout(() => {
+        // Reset scroll position
+        if (detailsContent) {
+            detailsContent.scrollTop = 0;
+        }
+        
+        // Add hint message
+        addModalHint();
+        
+        // Add event listeners for closing
         document.addEventListener('click', handleModalClose);
         document.addEventListener('keydown', handleEscapeKey);
-    }, 100);
+        
+        // Remove animating class
+        container.classList.remove('animating');
+    }, 400);
     
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
@@ -699,9 +735,15 @@ function collapseAllCards() {
     const allCards = container.querySelectorAll('.battery-card');
     const hint = container.querySelector('.modal-hint');
     
+    // Mark as animating to prevent interruptions
+    container.classList.add('animating');
+    
     // Remove expanded state from all cards
     allCards.forEach(card => {
         card.classList.remove('expanded');
+        
+        // Clear all inline styles completely
+        card.style.cssText = '';
         
         // Also close any open details
         const details = card.querySelector('.battery-details');
@@ -725,6 +767,11 @@ function collapseAllCards() {
     
     // Restore body scroll
     document.body.style.overflow = 'auto';
+    
+    // Remove animating class after animation completes
+    setTimeout(() => {
+        container.classList.remove('animating');
+    }, 400);
 }
 
 // Setup resource buttons

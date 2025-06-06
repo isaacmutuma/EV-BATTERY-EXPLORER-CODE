@@ -339,12 +339,21 @@ body {
     position: relative;
 }
 
+.battery-cards-container.animating {
+    pointer-events: none;
+}
+
+.battery-cards-container.animating .battery-card {
+    pointer-events: none;
+}
+
 .battery-cards-container.modal-mode .battery-card:not(.expanded) {
     opacity: 0.3;
     filter: blur(2px);
     transform: scale(0.9);
-    transition: all 0.5s ease;
+    transition: all 0.4s ease;
     pointer-events: none;
+    will-change: transform, opacity, filter;
 }
 
 .battery-card.expanded {
@@ -361,8 +370,9 @@ body {
     border: 3px solid #3498db !important;
     border-radius: 20px !important;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    animation: modalPopIn 0.5s ease-out !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    animation: modalPopIn 0.4s ease-out !important;
+    will-change: transform, opacity !important;
 }
 
 .battery-card.expanded .battery-details {
