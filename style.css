@@ -351,9 +351,11 @@ body {
     opacity: 0.3;
     filter: blur(2px);
     transform: scale(0.9);
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     pointer-events: none;
-    will-change: transform, opacity, filter;
+    will-change: auto;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .battery-card.expanded {
@@ -370,9 +372,13 @@ body {
     border: 3px solid #3498db !important;
     border-radius: 20px !important;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    animation: modalPopIn 0.4s ease-out !important;
-    will-change: transform, opacity !important;
+    transition: all 0.3s ease-out !important;
+    animation: none !important;
+    will-change: auto !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    transform-style: preserve-3d !important;
+    -webkit-transform-style: preserve-3d !important;
 }
 
 .battery-card.expanded .battery-details {

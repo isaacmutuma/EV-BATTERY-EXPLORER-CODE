@@ -613,17 +613,17 @@ function expandCard(clickedCard) {
         }
         collapseAllCards();
         // Wait for collapse animation to complete before expanding new card
-        setTimeout(() => expandCard(clickedCard), 400);
+        setTimeout(() => expandCard(clickedCard), 350);
         return;
     }
     
     // Mark container as animating to prevent multiple clicks
     container.classList.add('animating');
     
-    // Reset all cards to clean state
+    // Reset all cards to clean state with more robust cleanup
     allCards.forEach(card => {
         // Clear any inline styles that might interfere
-        card.style.cssText = '';
+        card.removeAttribute('style');
         
         const details = card.querySelector('.battery-details');
         const toggleBtn = card.querySelector('.toggle-btn');
@@ -634,40 +634,43 @@ function expandCard(clickedCard) {
         if (chevron) chevron.style.transform = 'rotate(0deg)';
     });
     
-    // Force reflow to ensure clean state
-    container.offsetHeight;
-    
-    // Expand the clicked card immediately
-    clickedCard.classList.add('expanded');
-    container.classList.add('modal-mode');
-    
-    // Auto-expand the details in modal view
-    const details = clickedCard.querySelector('.battery-details');
-    const detailsContent = clickedCard.querySelector('.battery-details-content');
-    if (details) {
-        details.classList.add('active');
-    }
-    
-    // Wait for expansion animation to complete
-    setTimeout(() => {
-        // Reset scroll position
-        if (detailsContent) {
-            detailsContent.scrollTop = 0;
+    // Use requestAnimationFrame for smoother rendering
+    requestAnimationFrame(() => {
+        // Force reflow to ensure clean state
+        container.offsetHeight;
+        
+        // Expand the clicked card
+        clickedCard.classList.add('expanded');
+        container.classList.add('modal-mode');
+        
+        // Auto-expand the details in modal view
+        const details = clickedCard.querySelector('.battery-details');
+        const detailsContent = clickedCard.querySelector('.battery-details-content');
+        if (details) {
+            details.classList.add('active');
         }
         
-        // Add hint message
-        addModalHint();
+        // Wait for expansion animation to complete
+        setTimeout(() => {
+            // Reset scroll position
+            if (detailsContent) {
+                detailsContent.scrollTop = 0;
+            }
+            
+            // Add hint message
+            addModalHint();
+            
+            // Add event listeners for closing
+            document.addEventListener('click', handleModalClose);
+            document.addEventListener('keydown', handleEscapeKey);
+            
+            // Remove animating class
+            container.classList.remove('animating');
+        }, 350);
         
-        // Add event listeners for closing
-        document.addEventListener('click', handleModalClose);
-        document.addEventListener('keydown', handleEscapeKey);
-        
-        // Remove animating class
-        container.classList.remove('animating');
-    }, 400);
-    
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden';
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    });
 }
 
 // Add hint message for modal
@@ -738,40 +741,43 @@ function collapseAllCards() {
     // Mark as animating to prevent interruptions
     container.classList.add('animating');
     
-    // Remove expanded state from all cards
-    allCards.forEach(card => {
-        card.classList.remove('expanded');
+    // Use requestAnimationFrame for smoother collapse
+    requestAnimationFrame(() => {
+        // Remove expanded state from all cards
+        allCards.forEach(card => {
+            card.classList.remove('expanded');
+            
+            // Clear all inline styles completely
+            card.removeAttribute('style');
+            
+            // Also close any open details
+            const details = card.querySelector('.battery-details');
+            const toggleBtn = card.querySelector('.toggle-btn');
+            const chevron = toggleBtn?.querySelector('i');
+            
+            if (details) details.classList.remove('active');
+            if (toggleBtn) toggleBtn.classList.remove('active');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        });
         
-        // Clear all inline styles completely
-        card.style.cssText = '';
+        // Remove modal mode
+        container.classList.remove('modal-mode');
         
-        // Also close any open details
-        const details = card.querySelector('.battery-details');
-        const toggleBtn = card.querySelector('.toggle-btn');
-        const chevron = toggleBtn?.querySelector('i');
+        // Remove hint
+        if (hint) hint.remove();
         
-        if (details) details.classList.remove('active');
-        if (toggleBtn) toggleBtn.classList.remove('active');
-        if (chevron) chevron.style.transform = 'rotate(0deg)';
+        // Remove event listeners
+        document.removeEventListener('click', handleModalClose);
+        document.removeEventListener('keydown', handleEscapeKey);
+        
+        // Restore body scroll
+        document.body.style.overflow = 'auto';
+        
+        // Remove animating class after animation completes
+        setTimeout(() => {
+            container.classList.remove('animating');
+        }, 350);
     });
-    
-    // Remove modal mode
-    container.classList.remove('modal-mode');
-    
-    // Remove hint
-    if (hint) hint.remove();
-    
-    // Remove event listeners
-    document.removeEventListener('click', handleModalClose);
-    document.removeEventListener('keydown', handleEscapeKey);
-    
-    // Restore body scroll
-    document.body.style.overflow = 'auto';
-    
-    // Remove animating class after animation completes
-    setTimeout(() => {
-        container.classList.remove('animating');
-    }, 400);
 }
 
 // Setup resource buttons
@@ -1089,14 +1095,30 @@ function initializeScrollAnimations() {
     }, 100);
 }
 
-// Enhanced initialization
+// Enhanced initialization with better timing for GitHub Pages
 document.addEventListener('DOMContentLoaded', function() {
-    initializeElements();
-    renderBatteryCards();
-    setupEventListeners();
-    setupSmoothScrolling();
-    initializeScrollAnimations();
-    addScrollableStyles();
+    // Small delay to ensure all assets are loaded
+    setTimeout(() => {
+        initializeElements();
+        renderBatteryCards();
+        setupEventListeners();
+        setupSmoothScrolling();
+        initializeScrollAnimations();
+        addScrollableStyles();
+    }, 100);
+});
+
+// Fallback initialization in case of loading issues
+window.addEventListener('load', function() {
+    // Check if already initialized
+    if (!document.getElementById('batteryCards').children.length) {
+        initializeElements();
+        renderBatteryCards();
+        setupEventListeners();
+        setupSmoothScrolling();
+        initializeScrollAnimations();
+        addScrollableStyles();
+    }
 });
 
 // EV Battery Calculator Functions
