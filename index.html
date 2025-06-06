@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body>5
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -38,6 +38,7 @@
         </div>
     </nav>
 
+
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
@@ -46,8 +47,21 @@
                 <p>Welcome to your one stop shop when it comes to all matters EV BATTERY</p>
                 <button class="explore-btn">Explore</button>
             </div>
-            <div class="hero-image">
-                <img src="image2.png" alt="Electric Vehicle Battery Visualization" class="ev-image">
+            <div class="hero-image-container">
+                <div class="image-carousel" id="imageCarousel">
+                    <!-- Images will be loaded here -->
+                </div>
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="image-label" id="imageLabel">EV Battery Technology</div>
+                <button class="carousel-arrow prev" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-arrow next" id="nextBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="carousel-nav" id="carouselNav">
+                    <!-- Navigation dots will be generated here -->
+                </div>
             </div>
         </div>
     </section>
@@ -76,12 +90,78 @@
             <h2>RESOURCES</h2>
             <p>To find out more information visit these resources</p>
             <div class="resource-buttons">
-                <button class="resource-btn active">EV PRICE CALCULATOR</button><!--CODE FOR THE APIS TO BE IMPLEMENTED(NOT YET DONE)-->
-                <button class="resource-btn">LATEST EV NEWS</button> <!--CODE FOR THE APIS TO BE IMPLEMENTED(NOT YET DONE!!)-->
+        
+                <button class="resource-btn" onclick="showCalculator()">EV BATTERY CALCULATOR</button>
             </div>
         </div>
         <div class="resources-image">
             <img src="image4.png" alt="Electric Vehicle Technology" class="resource-visual">
+        </div>
+        
+    </section>
+
+    <!-- EV Battery Calculator Section -->
+    <section id="calculator" class="calculator-section" style="display: none;">
+        <div class="calculator-content">
+            <div class="calculator-header">
+                <h2>EV BATTERY CALCULATOR</h2>
+                <p>Calculate battery capacity, range, and charging costs for your electric vehicle</p>
+                <button class="close-calculator" onclick="hideCalculator()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="calculator-grid">
+                <div class="calculator-inputs">
+                    <div class="input-group">
+                        <label for="batteryCapacity">Battery Capacity (kWh)</label>
+                        <input type="number" id="batteryCapacity" placeholder="e.g., 75" min="1" max="200">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="efficiency">Vehicle Efficiency (kWh/100km)</label>
+                        <input type="number" id="efficiency" placeholder="e.g., 18" min="5" max="50" step="0.1">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="electricityPrice">Electricity Price ($/kWh)</label>
+                        <input type="number" id="electricityPrice" placeholder="e.g., 0.12" min="0.01" max="1" step="0.01">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="chargingEfficiency">Charging Efficiency (%)</label>
+                        <input type="number" id="chargingEfficiency" placeholder="e.g., 90" min="50" max="100" value="90">
+                    </div>
+                    
+                    <button class="calculate-btn" onclick="calculateBattery()">Calculate</button>
+                </div>
+                
+                <div class="calculator-results">
+                    <div class="result-card">
+                        <h3>Estimated Range</h3>
+                        <div class="result-value" id="rangeResult">--</div>
+                        <span class="result-unit">kilometers</span>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Full Charge Cost</h3>
+                        <div class="result-value" id="costResult">--</div>
+                        <span class="result-unit">USD</span>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Cost per 100km</h3>
+                        <div class="result-value" id="costPer100Result">--</div>
+                        <span class="result-unit">USD</span>
+                    </div>
+                    
+                    <div class="result-card">
+                        <h3>Charging Time (0-80%)</h3>
+                        <div class="result-value" id="chargingTimeResult">--</div>
+                        <span class="result-unit">hours</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 

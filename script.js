@@ -1,3 +1,271 @@
+
+
+// Hero Image Carousel Data
+const heroImages = [
+ {
+url: 'image1.png',
+label: 'Modern Electric Vehicle',
+alt: 'Tesla Model 3 charging'
+ },
+ {
+url: 'image6.png',
+label: 'EV Battery Technology',
+alt: 'Electric vehicle battery pack'
+ },
+ {
+url: 'image3.png',
+label: 'Charging Infrastructure',
+alt: 'EV charging station'
+ },
+ {
+url: 'image4.png',
+label: 'Sustainable Transport',
+alt: 'Electric cars on the road'
+ },
+ {
+url: 'image5.png',
+label: 'Future of Mobility',
+alt: 'Advanced electric vehicle'
+ }
+];
+
+let currentSlide = 0;
+
+// Function to load images into carousel
+function loadHeroImages() {
+    const carousel = document.getElementById('imageCarousel');
+    const carouselNav = document.getElementById('carouselNav');
+    const imageLabel = document.getElementById('imageLabel');
+    
+    // Clear existing content
+    carousel.innerHTML = '';
+    carouselNav.innerHTML = '';
+    
+    heroImages.forEach((image, index) => {
+        // Create image element
+        const img = document.createElement('img');
+        img.src = image.url;
+        img.alt = image.alt;
+        img.classList.add('carousel-image');
+        if (index === 0) {
+            img.classList.add('active');
+            imageLabel.textContent = image.label;
+        }
+        
+        carousel.appendChild(img);
+        
+        // Create navigation dot
+        const dot = document.createElement('button');
+        dot.classList.add('nav-dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        
+        carouselNav.appendChild(dot);
+    });
+}
+
+// Function to go to specific slide
+function goToSlide(slideIndex) {
+    const images = document.querySelectorAll('.carousel-image');
+    const dots = document.querySelectorAll('.nav-dot');
+    const imageLabel = document.getElementById('imageLabel');
+    const progressBar = document.getElementById('progressBar');
+    
+    // Remove active class from current slide
+    if (images[currentSlide]) {
+        images[currentSlide].classList.remove('active');
+    }
+    if (dots[currentSlide]) {
+        dots[currentSlide].classList.remove('active');
+    }
+    
+    // Update current slide
+    currentSlide = slideIndex;
+    
+    // Add active class to new slide
+    if (images[currentSlide]) {
+        images[currentSlide].classList.add('active');
+    }
+    if (dots[currentSlide]) {
+        dots[currentSlide].classList.add('active');
+    }
+    
+    // Update label
+    if (heroImages[currentSlide]) {
+        imageLabel.textContent = heroImages[currentSlide].label;
+    }
+    
+    // Update progress bar
+    const progressPercentage = ((currentSlide + 1) / heroImages.length) * 100;
+    progressBar.style.width = progressPercentage + '%';
+}
+
+// Function to go to next slide
+function nextSlide() {
+    const nextIndex = (currentSlide + 1) % heroImages.length;
+    goToSlide(nextIndex);
+}
+
+// Function to go to previous slide
+function prevSlide() {
+    const prevIndex = (currentSlide - 1 + heroImages.length) % heroImages.length;
+    goToSlide(prevIndex);
+}
+
+// Initialize carousel when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadHeroImages();
+    
+    // Add event listeners for arrow buttons
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', nextSlide);
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', prevSlide);
+    }
+    
+    // Optional: Auto-advance carousel every 5 seconds
+    setInterval(nextSlide, 5000);
+});
+
+// Optional: Add keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') {
+        prevSlide();
+    } else if (e.key === 'ArrowRight') {
+        nextSlide();
+    }
+});
+// Auto-scrolling carousel functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = document.querySelector('.image-carousel');
+    const images = document.querySelectorAll('.carousel-image');
+    const navDots = document.querySelectorAll('.nav-dot');
+    const progressBar = document.querySelector('.progress-bar');
+    
+    let currentSlide = 0;
+    const totalSlides = images.length;
+    const slideInterval = 4000; // 4 seconds
+    let autoSlideTimer;
+    let progressTimer;
+    
+    // Initialize carousel
+    function initCarousel() {
+        if (totalSlides === 0) return;
+        
+        // Set initial state
+        updateCarousel();
+        startAutoSlide();
+    }
+    
+    // Update carousel position and active states
+    function updateCarousel() {
+        // Move carousel
+        const translateX = -currentSlide * 100;
+        carousel.style.transform = `translateX(${translateX}%)`;
+        
+        // Update navigation dots
+        navDots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentSlide);
+        });
+        
+        // Reset and start progress bar animation
+        if (progressBar) {
+            progressBar.style.width = '0%';
+            progressBar.style.transition = 'none';
+            
+            // Force reflow
+            progressBar.offsetHeight;
+            
+            // Start progress animation
+            progressBar.style.transition = `width ${slideInterval}ms linear`;
+            progressBar.style.width = '100%';
+        }
+    }
+    
+    // Go to next slide
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    }
+    
+    // Go to previous slide
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+    }
+    
+    // Go to specific slide
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+        restartAutoSlide();
+    }
+    
+    // Start auto-slide timer
+    function startAutoSlide() {
+        autoSlideTimer = setInterval(nextSlide, slideInterval);
+    }
+    
+    // Stop auto-slide timer
+    function stopAutoSlide() {
+        clearInterval(autoSlideTimer);
+    }
+    
+    // Restart auto-slide timer
+    function restartAutoSlide() {
+        stopAutoSlide();
+        startAutoSlide();
+    }
+    
+    // Add event listeners for navigation dots
+    navDots.forEach((dot, index) => {
+        dot.addEventListener('click', () => goToSlide(index));
+    });
+    
+    // Add event listeners for arrow controls
+    const prevArrow = document.querySelector('.carousel-arrow.prev');
+    const nextArrow = document.querySelector('.carousel-arrow.next');
+    
+    if (prevArrow) {
+        prevArrow.addEventListener('click', () => {
+            prevSlide();
+            restartAutoSlide();
+        });
+    }
+    
+    if (nextArrow) {
+        nextArrow.addEventListener('click', () => {
+            nextSlide();
+            restartAutoSlide();
+        });
+    }
+    
+    // Pause auto-slide on hover
+    const carouselContainer = document.querySelector('.hero-image-container');
+    if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+    }
+    
+    // Handle keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') {
+            prevSlide();
+            restartAutoSlide();
+        } else if (e.key === 'ArrowRight') {
+            nextSlide();
+            restartAutoSlide();
+        }
+    });
+    
+    // Initialize the carousel
+    initCarousel();
+});
 // Battery Data Object
 const batteryData = [
     {
@@ -292,39 +560,171 @@ function closeMobileMenu() {
     });
 }
 
-// Handle battery card toggle with enhanced scrollable functionality
+// Handle battery card toggle and modal expansion
 function handleCardToggle(event) {
     const toggleBtn = event.target.closest('.toggle-btn');
-    if (!toggleBtn) return;
+    const card = event.target.closest('.battery-card');
     
-    const card = toggleBtn.closest('.battery-card');
-    const details = card.querySelector('.battery-details');
-    const detailsContent = card.querySelector('.battery-details-content');
-    const chevron = toggleBtn.querySelector('i');
-    
-    // Toggle active states
-    details.classList.toggle('active');
-    toggleBtn.classList.toggle('active');
-    
-    // Animate chevron
-    if (details.classList.contains('active')) {
-        chevron.style.transform = 'rotate(180deg)';
-        
-        // Reset scroll position when opening
-        setTimeout(() => {
-            detailsContent.scrollTop = 0;
-        }, 100);
-        
-    } else {
-        chevron.style.transform = 'rotate(0deg)';
+    // Prevent expanding if clicking close button
+    if (event.target.closest('.battery-card.expanded::after')) {
+        return;
     }
     
-    // Add visual feedback
-    card.style.transform = details.classList.contains('active') ? 'scale(1.01)' : 'scale(1)';
+    // Handle card expansion (modal view)
+    if (card && !toggleBtn) {
+        expandCard(card);
+        return;
+    }
     
+    // Original toggle functionality is now handled within expanded view
+    if (toggleBtn && !card.classList.contains('expanded')) {
+        expandCard(card);
+    }
+}
+
+// Expand card to center modal view
+function expandCard(clickedCard) {
+    const container = document.getElementById('batteryCards');
+    const allCards = container.querySelectorAll('.battery-card');
+    
+    // Check if any card is currently expanded
+    const currentlyExpanded = container.querySelector('.battery-card.expanded');
+    if (currentlyExpanded) {
+        collapseAllCards();
+        if (currentlyExpanded === clickedCard) {
+            return; // If clicking the same expanded card, just close it
+        }
+    }
+    
+    // Close all card details first
+    allCards.forEach(card => {
+        const details = card.querySelector('.battery-details');
+        const toggleBtn = card.querySelector('.toggle-btn');
+        const chevron = toggleBtn?.querySelector('i');
+        
+        if (details) details.classList.remove('active');
+        if (toggleBtn) toggleBtn.classList.remove('active');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    });
+    
+    // Expand the clicked card
+    clickedCard.classList.add('expanded');
+    container.classList.add('modal-mode');
+    
+    // Auto-expand the details in modal view
+    const details = clickedCard.querySelector('.battery-details');
+    const detailsContent = clickedCard.querySelector('.battery-details-content');
+    if (details) {
+        details.classList.add('active');
+        setTimeout(() => {
+            if (detailsContent) detailsContent.scrollTop = 0;
+        }, 100);
+    }
+    
+    // Add hint message
+    addModalHint();
+    
+    // Add event listeners for closing
     setTimeout(() => {
-        card.style.transform = 'scale(1)';
-    }, 200);
+        document.addEventListener('click', handleModalClose);
+        document.addEventListener('keydown', handleEscapeKey);
+    }, 100);
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+// Add hint message for modal
+function addModalHint() {
+    const container = document.getElementById('batteryCards');
+    
+    // Remove existing hint
+    const existingHint = container.querySelector('.modal-hint');
+    if (existingHint) existingHint.remove();
+    
+    // Add new hint
+    const hint = document.createElement('div');
+    hint.className = 'modal-hint';
+    hint.textContent = 'Click the ✕ button or press ESC to close';
+    container.appendChild(hint);
+    
+    // Auto-remove hint after 3 seconds
+    setTimeout(() => {
+        if (hint.parentNode) {
+            hint.style.opacity = '0';
+            setTimeout(() => hint.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Handle modal close
+function handleModalClose(event) {
+    const expandedCard = document.querySelector('.battery-card.expanded');
+    if (!expandedCard) return;
+    
+    const clickedOnCard = event.target.closest('.battery-card.expanded');
+    
+    // Check if clicking on the pseudo-element close button (✕)
+    const rect = expandedCard.getBoundingClientRect();
+    const closeButtonArea = {
+        left: rect.right - 25,
+        right: rect.right + 15,
+        top: rect.top - 25,
+        bottom: rect.top + 15
+    };
+    
+    const clickedOnCloseBtn = (
+        event.clientX >= closeButtonArea.left &&
+        event.clientX <= closeButtonArea.right &&
+        event.clientY >= closeButtonArea.top &&
+        event.clientY <= closeButtonArea.bottom
+    );
+    
+    // Close if clicking outside the expanded card or on close button
+    if (!clickedOnCard || clickedOnCloseBtn) {
+        collapseAllCards();
+    }
+}
+
+// Handle ESC key to close modal
+function handleEscapeKey(event) {
+    if (event.key === 'Escape') {
+        collapseAllCards();
+    }
+}
+
+// Collapse all cards and exit modal mode
+function collapseAllCards() {
+    const container = document.getElementById('batteryCards');
+    const allCards = container.querySelectorAll('.battery-card');
+    const hint = container.querySelector('.modal-hint');
+    
+    // Remove expanded state from all cards
+    allCards.forEach(card => {
+        card.classList.remove('expanded');
+        
+        // Also close any open details
+        const details = card.querySelector('.battery-details');
+        const toggleBtn = card.querySelector('.toggle-btn');
+        const chevron = toggleBtn?.querySelector('i');
+        
+        if (details) details.classList.remove('active');
+        if (toggleBtn) toggleBtn.classList.remove('active');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    });
+    
+    // Remove modal mode
+    container.classList.remove('modal-mode');
+    
+    // Remove hint
+    if (hint) hint.remove();
+    
+    // Remove event listeners
+    document.removeEventListener('click', handleModalClose);
+    document.removeEventListener('keydown', handleEscapeKey);
+    
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
 }
 
 // Setup resource buttons
@@ -652,9 +1052,54 @@ document.addEventListener('DOMContentLoaded', function() {
     addScrollableStyles();
 });
 
+// EV Battery Calculator Functions
+function showCalculator() {
+    document.getElementById('calculator').style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function hideCalculator() {
+    document.getElementById('calculator').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+function calculateBattery() {
+    const capacity = parseFloat(document.getElementById('batteryCapacity').value);
+    const efficiency = parseFloat(document.getElementById('efficiency').value);
+    const electricityPrice = parseFloat(document.getElementById('electricityPrice').value);
+    const chargingEfficiency = parseFloat(document.getElementById('chargingEfficiency').value) / 100;
+
+    // Validate inputs
+    if (!capacity || !efficiency || !electricityPrice || !chargingEfficiency) {
+        alert('Please fill in all fields with valid numbers');
+        return;
+    }
+
+    // Calculate range (km)
+    const range = (capacity / efficiency) * 100;
+    
+    // Calculate full charge cost
+    const fullChargeCost = (capacity * electricityPrice) / chargingEfficiency;
+    
+    // Calculate cost per 100km
+    const costPer100km = (efficiency * electricityPrice) / chargingEfficiency;
+    
+    // Estimate charging time (0-80% with typical charging curve)
+    const chargingTime = (capacity * 0.8) / 50; // Assuming 50kW average charging power
+
+    // Display results
+    document.getElementById('rangeResult').textContent = Math.round(range);
+    document.getElementById('costResult').textContent = fullChargeCost.toFixed(2);
+    document.getElementById('costPer100Result').textContent = costPer100km.toFixed(2);
+    document.getElementById('chargingTimeResult').textContent = chargingTime.toFixed(1);
+}
+
 // Export functions for potential external use
 window.EVBatteryExplorer = {
     filterBatteries,
     sortBatteries,
-    batteryData
+    batteryData,
+    showCalculator,
+    hideCalculator,
+    calculateBattery
 };
