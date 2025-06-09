@@ -613,14 +613,14 @@ function expandCard(clickedCard) {
         }
         collapseAllCards();
         // Wait for collapse animation to complete before expanding new card
-        setTimeout(() => expandCard(clickedCard), 350);
+        setTimeout(() => expandCard(clickedCard), 300);
         return;
     }
     
     // Mark container as animating to prevent multiple clicks
     container.classList.add('animating');
     
-    // Reset all cards to clean state with more robust cleanup
+    // Reset all cards to clean state
     allCards.forEach(card => {
         // Clear any inline styles that might interfere
         card.removeAttribute('style');
@@ -634,11 +634,8 @@ function expandCard(clickedCard) {
         if (chevron) chevron.style.transform = 'rotate(0deg)';
     });
     
-    // Use requestAnimationFrame for smoother rendering
+    // Use single requestAnimationFrame for smoother performance
     requestAnimationFrame(() => {
-        // Force reflow to ensure clean state
-        container.offsetHeight;
-        
         // Expand the clicked card
         clickedCard.classList.add('expanded');
         container.classList.add('modal-mode');
@@ -666,7 +663,7 @@ function expandCard(clickedCard) {
             
             // Remove animating class
             container.classList.remove('animating');
-        }, 350);
+        }, 300);
         
         // Prevent body scroll
         document.body.style.overflow = 'hidden';
@@ -776,7 +773,7 @@ function collapseAllCards() {
         // Remove animating class after animation completes
         setTimeout(() => {
             container.classList.remove('animating');
-        }, 350);
+        }, 300);
     });
 }
 

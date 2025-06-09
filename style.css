@@ -7,6 +7,9 @@
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -16,6 +19,8 @@ body {
     overflow-x: hidden;
     background: linear-gradient(135deg, #b8d4f0 0%, #a8c8e8 100%);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Navigation Styles */
@@ -323,7 +328,7 @@ body {
     border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -353,9 +358,6 @@ body {
     transform: scale(0.9);
     transition: all 0.3s ease;
     pointer-events: none;
-    will-change: auto;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
 }
 
 .battery-card.expanded {
@@ -372,13 +374,7 @@ body {
     border: 3px solid #3498db !important;
     border-radius: 20px !important;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
-    transition: all 0.3s ease-out !important;
-    animation: none !important;
-    will-change: auto !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-    transform-style: preserve-3d !important;
-    -webkit-transform-style: preserve-3d !important;
+    transition: all 0.3s ease !important;
 }
 
 .battery-card.expanded .battery-details {
@@ -484,6 +480,8 @@ body {
 }
 
 /* Mobile responsive for expanded cards */
+/* Removed Chrome-specific optimizations that were causing scroll issues */
+
 @media (max-width: 768px) {
     .battery-card.expanded {
         width: 95vw !important;
