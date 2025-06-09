@@ -1163,6 +1163,293 @@ function calculateBattery() {
     document.getElementById('chargingTimeResult').textContent = chargingTime.toFixed(1);
 }
 
+// Battery Comparison Data
+const comparisonData = [
+    {
+        id: 'lithium-ion',
+        name: 'Lithium-Ion',
+        energyDensity: '150-250',
+        lifespan: '1000-3000',
+        safetyRating: 7,
+        costRating: 6,
+        temperatureRange: '-20 to 60',
+        useCase: 'Most EVs, Tesla Model S/3/X/Y',
+        category: 'commercial',
+        icon: 'fas fa-battery-full'
+    },
+    {
+        id: 'solid-state',
+        name: 'Solid-State',
+        energyDensity: '300-500',
+        lifespan: '3000-10000',
+        safetyRating: 10,
+        costRating: 3,
+        temperatureRange: '-40 to 80',
+        useCase: 'Next-gen EVs (2025+)',
+        category: 'emerging',
+        icon: 'fas fa-microchip'
+    },
+    {
+        id: 'nickel-metal',
+        name: 'Nickel-Metal Hydride',
+        energyDensity: '60-120',
+        lifespan: '2000-4000',
+        safetyRating: 9,
+        costRating: 7,
+        temperatureRange: '-30 to 70',
+        useCase: 'Hybrid vehicles, Toyota Prius',
+        category: 'commercial',
+        icon: 'fas fa-battery-half'
+    },
+    {
+        id: 'lead-acid',
+        name: 'Lead-Acid',
+        energyDensity: '30-50',
+        lifespan: '200-1000',
+        safetyRating: 8,
+        costRating: 10,
+        temperatureRange: '-20 to 50',
+        useCase: 'Golf carts, low-speed EVs',
+        category: 'affordable',
+        icon: 'fas fa-battery-empty'
+    },
+    {
+        id: 'lithium-iron',
+        name: 'Lithium Iron Phosphate',
+        energyDensity: '90-160',
+        lifespan: '2000-5000',
+        safetyRating: 10,
+        costRating: 8,
+        temperatureRange: '-20 to 70',
+        useCase: 'BYD vehicles, energy storage',
+        category: 'commercial',
+        icon: 'fas fa-shield-alt'
+    },
+    {
+        id: 'ultracapacitors',
+        name: 'Ultracapacitors',
+        energyDensity: '5-15',
+        lifespan: '500000+',
+        safetyRating: 9,
+        costRating: 4,
+        temperatureRange: '-40 to 70',
+        useCase: 'Regenerative braking, power assist',
+        category: 'emerging',
+        icon: 'fas fa-bolt'
+    }
+];
+
+let selectedBatteries = [];
+let currentFilter = 'all';
+let currentSort = 'name';
+
+// Show Comparison Tool
+function showComparisonTool() {
+    document.getElementById('comparison-tool').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    renderComparisonTable();
+}
+
+// Hide Comparison Tool
+function hideComparisonTool() {
+    document.getElementById('comparison-tool').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    clearSelection();
+}
+
+// Render Comparison Table
+function renderComparisonTable() {
+    const tbody = document.getElementById('comparisonTableBody');
+    tbody.innerHTML = '';
+    
+    let filteredData = comparisonData;
+    
+    // Apply filter
+    if (currentFilter !== 'all') {
+        filteredData = comparisonData.filter(battery => battery.category === currentFilter);
+    }
+    
+    // Apply sort
+    filteredData.sort((a, b) => {
+        switch (currentSort) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            case 'capacity':
+                return parseInt(b.energyDensity.split('-')[1]) - parseInt(a.energyDensity.split('-')[1]);
+            case 'lifespan':
+                return parseInt(b.lifespan.split('-')[1]) - parseInt(a.lifespan.split('-')[1]);
+            case 'safety':
+                return b.safetyRating - a.safetyRating;
+            case 'cost':
+                return b.costRating - a.costRating;
+            default:
+                return 0;
+        }
+    });
+    
+    filteredData.forEach(battery => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <div class="battery-name">
+                    <i class="${battery.icon}"></i>
+                    <span>${battery.name}</span>
+                </div>
+            </td>
+            <td>${battery.energyDensity}</td>
+            <td>${battery.lifespan}</td>
+            <td>
+                <div class="rating-bar">
+                    <div class="rating-fill" style="width: ${battery.safetyRating * 10}%"></div>
+                    <span>${battery.safetyRating}/10</span>
+                </div>
+            </td>
+            <td>
+                <div class="rating-bar">
+                    <div class="rating-fill cost-rating" style="width: ${battery.costRating * 10}%"></div>
+                    <span>${battery.costRating}/10</span>
+                </div>
+            </td>
+            <td>${battery.temperatureRange}</td>
+            <td>${battery.useCase}</td>
+            <td>
+                <input type="checkbox" id="select-${battery.id}" 
+                       onchange="toggleBatterySelection('${battery.id}')"
+                       ${selectedBatteries.includes(battery.id) ? 'checked' : ''}>
+                <label for="select-${battery.id}">Compare</label>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Filter Comparison
+function filterComparison(category) {
+    currentFilter = category;
+    
+    // Update active filter button
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === category) {
+            btn.classList.add('active');
+        }
+    });
+    
+    renderComparisonTable();
+}
+
+// Sort Comparison
+function sortComparison(sortBy) {
+    currentSort = sortBy;
+    renderComparisonTable();
+}
+
+// Toggle Battery Selection
+function toggleBatterySelection(batteryId) {
+    const index = selectedBatteries.indexOf(batteryId);
+    
+    if (index > -1) {
+        selectedBatteries.splice(index, 1);
+    } else {
+        if (selectedBatteries.length < 4) { // Limit to 4 batteries for comparison
+            selectedBatteries.push(batteryId);
+        } else {
+            alert('You can compare up to 4 batteries at once. Please remove one to add another.');
+            document.getElementById(`select-${batteryId}`).checked = false;
+            return;
+        }
+    }
+    
+    updateSelectedComparison();
+}
+
+// Update Selected Comparison
+function updateSelectedComparison() {
+    const selectedSection = document.getElementById('selectedComparison');
+    const cardsContainer = document.getElementById('comparisonCards');
+    
+    if (selectedBatteries.length === 0) {
+        selectedSection.style.display = 'none';
+        return;
+    }
+    
+    selectedSection.style.display = 'block';
+    cardsContainer.innerHTML = '';
+    
+    selectedBatteries.forEach(batteryId => {
+        const battery = comparisonData.find(b => b.id === batteryId);
+        const card = document.createElement('div');
+        card.className = 'comparison-card';
+        card.innerHTML = `
+            <div class="comparison-card-header">
+                <i class="${battery.icon}"></i>
+                <h4>${battery.name}</h4>
+                <button class="remove-battery" onclick="removeBatteryFromComparison('${battery.id}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="comparison-metrics">
+                <div class="metric">
+                    <span class="metric-label">Energy Density</span>
+                    <span class="metric-value">${battery.energyDensity} Wh/kg</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Lifespan</span>
+                    <span class="metric-value">${battery.lifespan} cycles</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Safety Rating</span>
+                    <span class="metric-value">${battery.safetyRating}/10</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Cost Rating</span>
+                    <span class="metric-value">${battery.costRating}/10</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Temperature Range</span>
+                    <span class="metric-value">${battery.temperatureRange}°C</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Best Use Case</span>
+                    <span class="metric-value">${battery.useCase}</span>
+                </div>
+            </div>
+        `;
+        cardsContainer.appendChild(card);
+    });
+}
+
+// Remove Battery from Comparison
+function removeBatteryFromComparison(batteryId) {
+    const index = selectedBatteries.indexOf(batteryId);
+    if (index > -1) {
+        selectedBatteries.splice(index, 1);
+        document.getElementById(`select-${batteryId}`).checked = false;
+        updateSelectedComparison();
+    }
+}
+
+// Clear Selection
+function clearSelection() {
+    selectedBatteries = [];
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    updateSelectedComparison();
+}
+
+// Setup filter button event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterComparison(btn.dataset.filter);
+            });
+        });
+    }, 200);
+});
+
 // Export functions for potential external use
 window.EVBatteryExplorer = {
     filterBatteries,
@@ -1170,5 +1457,12 @@ window.EVBatteryExplorer = {
     batteryData,
     showCalculator,
     hideCalculator,
-    calculateBattery
+    calculateBattery,
+    showComparisonTool,
+    hideComparisonTool,
+    comparisonData,
+    filterComparison,
+    sortComparison,
+    toggleBatterySelection,
+    clearSelection
 };

@@ -90,8 +90,8 @@
             <h2>RESOURCES</h2>
             <p>To find out more information visit these resources</p>
             <div class="resource-buttons">
-        
                 <button class="resource-btn" onclick="showCalculator()">EV BATTERY CALCULATOR</button>
+                <button class="resource-btn" onclick="showComparisonTool()">BATTERY COMPARISON TOOLS</button>
             </div>
         </div>
         <div class="resources-image">
@@ -161,6 +161,70 @@
                         <span class="result-unit">hours</span>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Battery Comparison Tools Section -->
+    <section id="comparison-tool" class="comparison-section" style="display: none;">
+        <div class="comparison-content">
+            <div class="comparison-header">
+                <h2>BATTERY COMPARISON TOOLS</h2>
+                <p>Compare different EV battery types side-by-side based on key performance metrics</p>
+                <button class="close-comparison" onclick="hideComparisonTool()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="comparison-controls">
+                <div class="filter-section">
+                    <h3>Filter by Category:</h3>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All Batteries</button>
+                        <button class="filter-btn" data-filter="commercial">Commercial Use</button>
+                        <button class="filter-btn" data-filter="emerging">Emerging Tech</button>
+                        <button class="filter-btn" data-filter="affordable">Affordable</button>
+                    </div>
+                </div>
+                
+                <div class="sort-section">
+                    <label for="sortBy">Sort by:</label>
+                    <select id="sortBy" onchange="sortComparison(this.value)">
+                        <option value="name">Battery Type</option>
+                        <option value="capacity">Energy Density</option>
+                        <option value="lifespan">Lifespan</option>
+                        <option value="safety">Safety Rating</option>
+                        <option value="cost">Cost Rating</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="comparison-table-container">
+                <table class="comparison-table" id="comparisonTable">
+                    <thead>
+                        <tr>
+                            <th>Battery Type</th>
+                            <th>Energy Density<br><span class="sub-header">(Wh/kg)</span></th>
+                            <th>Lifespan<br><span class="sub-header">(Cycles)</span></th>
+                            <th>Safety Rating<br><span class="sub-header">(1-10)</span></th>
+                            <th>Cost Rating<br><span class="sub-header">(1-10)</span></th>
+                            <th>Temperature Range<br><span class="sub-header">(°C)</span></th>
+                            <th>Best Use Case</th>
+                            <th>Select to Compare</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="selected-comparison" id="selectedComparison" style="display: none;">
+                <h3>Selected Batteries Comparison</h3>
+                <div class="comparison-cards" id="comparisonCards">
+                    <!-- Selected battery comparison cards will appear here -->
+                </div>
+                <button class="clear-selection" onclick="clearSelection()">Clear Selection</button>
             </div>
         </div>
     </section>
